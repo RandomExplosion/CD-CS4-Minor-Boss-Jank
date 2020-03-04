@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using ConsoleTables;
 
 namespace CSharp_MinorBoss_ConsoleApp
 {
@@ -12,6 +13,9 @@ namespace CSharp_MinorBoss_ConsoleApp
         /// <summary>
         /// Source: https://www.codeproject.com/Articles/415732/Reading-and-Writing-CSV-Files-in-Csharp
         /// </summary>
+        
+        public static HeroTable dbTable;
+
         static void WriteTest()
         {
 
@@ -32,7 +36,7 @@ namespace CSharp_MinorBoss_ConsoleApp
             }
 
             //Instantiate 
-            HeroTable dbTable = new HeroTable();
+            dbTable = new HeroTable();
             dbTable.LoadFromCSV("Database.csv");
 
             while (true)
@@ -46,90 +50,21 @@ namespace CSharp_MinorBoss_ConsoleApp
                 {
                     case 1:
                         //Console.WriteLine("Not Yet Implimented");
-                        Console.WriteLine(dbTable.GetPrintableTable());
+                        dbTable.PrintTable();
                         WaitForEnterPress();
                         break;
 
-                    case 2:
-                        Console.Clear();
-                        bool validStats = false;
-                        string _heroName = "";
-                        string _realName = "";
-                        double _weight = 0d;
-                        double _height = 0d;
-                        Race _race = Race.Human;
-                        bool _inMovie = false;
-
-                        while (!validStats)
-                        {
-                            Console.Clear();
-
-
-                            try
-                            {
-                                //Hero Name
-                                Console.WriteLine("Enter New Superhero's Hero Alias");
-                                _heroName = Console.ReadLine();
-                                if (dbTable.heroesByName.ContainsKey(_heroName))
-                                {
-                                    Console.WriteLine("A hero with that name already exists.\nTry editing it instead.");
-                                    WaitForEnterPress();
-
-                                    continue; //Invalid
-                                }
-
-                                //Real Name
-                                Console.WriteLine("Enter New Superhero's Real Name");
-                                _realName = Console.ReadLine();
-
-                                //Weight
-                                Console.WriteLine("Enter New Superhero's Weight In KG (Numeric, Rounded to two decimal places)");
-                                _weight = Convert.ToDouble(Console.ReadLine());
-
-                                //Height
-                                Console.WriteLine("Enter New Superhero's Height in M (Numeric, Rounded to two decimal places)");
-                                _height = Convert.ToDouble(Console.ReadLine());
-
-                                //Race
-                                Console.WriteLine("Enter New Superhero's Race (not case sensitive)\nValid Races: Human, Alien, Animal, Supernatural");
-                                if (!Enum.TryParse<Race>(Console.ReadLine(), true, out _race))    //Attempt to parse Race and go back to the start if invalid
-                                {
-                                    continue;
-                                }
-
-                                //In Movie?
-                                Console.WriteLine("Has the new SuperHero been in a movie yet?");
-                                ConsoleKey nextKey = Console.ReadKey().Key;
-
-                                if (nextKey == ConsoleKey.Y)
-                                {
-                                    _inMovie = true;
-                                }
-                                else if (nextKey == ConsoleKey.N)
-                                {
-                                    _inMovie = false;
-                                }
-
-                                dbTable.heroesByName.Add(_heroName, new SuperHero(_heroName, _realName, _weight, _height, _race, _inMovie));
-                                dbTable.SaveToCSV("Database.csv");
-                                validStats = true;
-                                Console.WriteLine();
-                                WaitForEnterPress();
-                            }
-                            catch (Exception)
-                            {
-                                continue;
-                            }
-                        }
+                    case 2: //Add Hero
+                        dbTable.AddSuperHero();
                         break;
 
                     case 3:
-                        Console.WriteLine("Not Yet Implimented");
+                        dbTable.EditSuperHero();
                         WaitForEnterPress();
                         break;
 
                     case 4:
-                        Console.WriteLine("Not Yet Implimented");
+                        dbTable.RemoveHero();
                         WaitForEnterPress();
                         break;
 
@@ -182,7 +117,7 @@ namespace CSharp_MinorBoss_ConsoleApp
 
         }
 
-        static void WaitForEnterPress()
+        public static void WaitForEnterPress()
         {
             Console.WriteLine("Press ENTER to continue...");
             bool hasPressedEnter = false;
@@ -231,11 +166,19 @@ namespace CSharp_MinorBoss_ConsoleApp
     }
     public class HeroTable
     {
-        public readonly Dictionary<string, SuperHero> heroesByName = new Dictionary<string, SuperHero>();
+        public readonly SortedDictionary<string, SuperHero> heroesByName = new SortedDictionary<string, SuperHero>();
 
-        public string GetPrintableTable()
+        public void PrintTable()
         {
-            return "Table printing not yet implimented";
+            Console.Clear();
+            Console.WriteLine("MarvelDB Superhero Database:\n");
+            ConsoleTable consoleTable = new ConsoleTable("Alias/Code Name", "Real Name", "Weight", "Height", "Race", "In Movie");
+            foreach (SuperHero hero in heroesByName.Values)
+            {
+                consoleTable.AddRow(hero.heroName, hero.realName, hero.weight.ToString(), hero.height.ToString(), hero.race.ToString(), hero.inMovie.ToString());
+            }
+            consoleTable.Write();
+            
         }
 
         //Load the data from the csv database
@@ -295,5 +238,232 @@ namespace CSharp_MinorBoss_ConsoleApp
             }
         }
 
+        public void AddSuperHero()
+        {
+            Console.Clear();
+            bool validStats = false;
+            string _heroName = "";
+            string _realName = "";
+            double _weight = 0d;
+            double _height = 0d;
+            Race _race = Race.Human;
+            bool _inMovie = false;
+
+            while (!validStats)
+            {
+                Console.Clear();
+
+                try
+                {
+                    //Hero Name
+                    Console.WriteLine("Enter Superhero's Hero Alias");
+                    _heroName = Console.ReadLine();
+                    if (heroesByName.ContainsKey(_heroName))
+                    {
+                        Console.WriteLine("A hero with that name already exists.\nTry editing it instead.");
+                        Program.WaitForEnterPress();
+
+                        continue; //Invalid
+                    }
+
+                    //Real Name
+                    Console.WriteLine("Enter Superhero's Real Name");
+                    _realName = Console.ReadLine();
+
+                    //Weight
+                    Console.WriteLine("Enter Superhero's Weight In KG (Numeric, Rounded to two decimal places)");
+                    _weight = Convert.ToDouble(Console.ReadLine());
+
+                    //Height
+                    Console.WriteLine("Enter Superhero's Height in M (Numeric, Rounded to two decimal places)");
+                    _height = Convert.ToDouble(Console.ReadLine());
+
+                    //Race
+                    Console.WriteLine("Enter Superhero's Race (not case sensitive)\nValid Races: Human, Alien, Animal, Supernatural");
+                    if (!Enum.TryParse<Race>(Console.ReadLine(), true, out _race))    //Attempt to parse Race and go back to the start if invalid
+                    {
+                        continue;
+                    }
+
+                    //In Movie?
+                    Console.WriteLine("Has the SuperHero been in a movie yet? Y/N");
+                    string YNSame = Console.ReadLine();
+
+                    if (YNSame.ToUpper() == "Y")
+                    {
+                        _inMovie = true;
+                    }
+                    else if (YNSame.ToUpper() == "N")
+                    {
+                        _inMovie = false;
+                    }
+
+                    #region Samedetection
+                    if (_realName.ToUpper() == "SAME")
+                    {
+                        _realName = Program.dbTable.heroesByName[_heroName].realName;
+                    }
+                    else if (_realName.ToUpper() == "SAME")
+                    {
+                        _realName = Program.dbTable.heroesByName[_heroName].realName;
+                    }
+                    #endregion
+
+                    heroesByName.Add(_heroName, new SuperHero(_heroName, _realName, _weight, _height, _race, _inMovie));
+                    SaveToCSV("Database.csv");
+                    validStats = true;
+                    Console.WriteLine();
+                    Program.WaitForEnterPress();
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+        }
+
+        public void EditSuperHero()
+        {
+            Console.Clear();
+            bool validStats = false;
+            string _heroName = "";
+            string _realName = "";
+            string _weight = "";
+            string _height = "";
+            Race _race = Race.Human;
+            string _raceStr = "";
+            bool _inMovie = false;
+
+            while (!validStats)
+            {
+                Console.Clear();
+
+
+                try
+                {
+                    //Hero Name
+                    Console.WriteLine("Enter Hero Alias of the Superhero you want to edit.");
+                    _heroName = Console.ReadLine();
+                    if (!heroesByName.ContainsKey(_heroName))
+                    {
+                        Console.WriteLine("The database does not contain a hero with that name.\nTry Creating it instead");
+                        Program.WaitForEnterPress();
+
+                        return; //Invalid
+                    }
+
+                    //Real Name
+                    Console.WriteLine("Enter Superhero's Real Name");
+                    _realName = Console.ReadLine();
+
+                    //Weight
+                    Console.WriteLine("Enter Superhero's Weight In KG (Numeric, Rounded to two decimal places)");
+                    _weight = Console.ReadLine();
+                    //Validate
+                    //Validate if not same
+                    if (_weight.ToUpper() != "SAME")
+                    {
+                        Convert.ToInt32(_weight);
+                    }
+
+                    //Height
+                    Console.WriteLine("Enter Superhero's Height in M (Numeric, Rounded to two decimal places)");
+                    _height = Console.ReadLine();
+                    //Validate if not same
+                    if (_height.ToUpper() != "SAME")
+                    {
+                        Convert.ToInt32(_height); 
+                    }
+
+                    //Race
+                    Console.WriteLine("Enter Superhero's Race (not case sensitive)\nValid Races: Human, Alien, Animal, Supernatural");
+                    _raceStr = Console.ReadLine();
+                    if (!Enum.TryParse<Race>(_raceStr, true, out _race) && _raceStr.ToUpper() != "SAME")    //Attempt to parse Race and go back to the start if invalid
+                    {
+                        continue;
+                    }
+
+                    //In Movie?
+                    Console.WriteLine("Has the SuperHero been in a movie yet? Y/N");
+                    string YNSame = Console.ReadLine();
+
+                    if (YNSame.ToUpper() == "Y")
+                    {
+                        _inMovie = true;
+                    }
+                    else if (YNSame.ToUpper() == "N")
+                    {
+                        _inMovie = false;
+                    }
+
+                    SuperHero existingData = Program.dbTable.heroesByName[_heroName];
+
+                    #region Samedetection
+                    if (_realName.ToUpper() == "SAME")
+                    {
+                        _realName = existingData.realName;
+                    }
+                    if (_weight.ToUpper() == "SAME")
+                    {
+                        _weight = existingData.weight.ToString();
+                    }
+                    if (_height.ToUpper() == "SAME")
+                    {
+                        _height = existingData.height.ToString();
+                    }
+                    if (_raceStr.ToUpper() == "SAME")
+                    {
+                        _race = existingData.race;
+                    }
+                    if(YNSame.ToUpper() == "SAME")
+                    {
+                        _inMovie = existingData.inMovie;
+                    }
+                    #endregion
+
+                    double _doubleweight = Convert.ToDouble(_weight);
+                    double _doubleheight = Convert.ToDouble(_height);
+
+                    //Remove Key For this hero (so it can be added with new values)
+                    heroesByName.Remove(_heroName);
+                    heroesByName.Add(_heroName, new SuperHero(_heroName, _realName, _doubleheight, _doubleweight, _race, _inMovie));
+                    SaveToCSV("Database.csv");
+                    validStats = true;
+                    Console.WriteLine();
+                    Program.WaitForEnterPress();
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+            }
+        }
+
+        public void RemoveHero()
+        {
+            //Query The name of the hero to remove
+            Console.WriteLine("Enter name of hero to remove");
+            string _heroName = Console.ReadLine();
+
+            //Check that the hero is in the database
+            if (!heroesByName.ContainsKey(_heroName))
+            {
+                Console.WriteLine("Could not remove hero: No hero with that name exists in database.");
+                Program.WaitForEnterPress();
+                return;
+            }
+
+            //Prompt for Confirmation
+            Console.Clear();
+            Console.WriteLine($"Are you sure you want to delete this hero?\n\'{_heroName}\' will be lost forever! (A long time)\nWrite the name of this hero below to confirm.");
+            string ConfirmationStr = Console.ReadLine();
+
+            if (ConfirmationStr == _heroName)
+            {
+                //Remove them
+                heroesByName.Remove(_heroName);
+                Console.Clear(); 
+            }
+        }
     }
 }
