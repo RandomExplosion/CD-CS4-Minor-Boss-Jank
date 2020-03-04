@@ -56,6 +56,7 @@ namespace CSharp_MinorBoss_ConsoleApp
 
                     case 2: //Add Hero
                         dbTable.AddSuperHero();
+                        WaitForEnterPress();
                         break;
 
                     case 3:
@@ -313,7 +314,6 @@ namespace CSharp_MinorBoss_ConsoleApp
                     SaveToCSV("Database.csv");
                     validStats = true;
                     Console.WriteLine();
-                    Program.WaitForEnterPress();
                 }
                 catch (Exception)
                 {
@@ -338,7 +338,6 @@ namespace CSharp_MinorBoss_ConsoleApp
             {
                 Console.Clear();
 
-
                 try
                 {
                     //Hero Name
@@ -351,6 +350,9 @@ namespace CSharp_MinorBoss_ConsoleApp
 
                         return; //Invalid
                     }
+
+                    //Usage note
+                    Console.WriteLine("\nNOTE: type \'same\' (not case sensitive) to keep the value the same\n\n");
 
                     //Real Name
                     Console.WriteLine("Enter Superhero's Real Name");
@@ -430,9 +432,8 @@ namespace CSharp_MinorBoss_ConsoleApp
                     SaveToCSV("Database.csv");
                     validStats = true;
                     Console.WriteLine();
-                    Program.WaitForEnterPress();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     continue;
                 }
