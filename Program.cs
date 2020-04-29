@@ -116,6 +116,8 @@ namespace CSharp_MinorBoss_ConsoleApp
                 }
                 catch (Exception)
                 {
+                    Console.WriteLine("Please Select a valid option");
+                    WaitForEnterPress();
                     continue;                                               //Allow the user to try again
                 }
 
@@ -326,7 +328,7 @@ namespace CSharp_MinorBoss_ConsoleApp
                     _weight = Convert.ToDouble(Console.ReadLine());
 
                     //Height
-                    Console.WriteLine("Enter Superhero's Height in M (Numeric, Rounded to two decimal places)");
+                    Console.WriteLine("Enter Superhero's Height in CM (Numeric, Rounded to two decimal places)");
                     _height = Convert.ToDouble(Console.ReadLine());
 
                     //Race
@@ -422,7 +424,7 @@ namespace CSharp_MinorBoss_ConsoleApp
                     }
 
                     //Height
-                    Console.WriteLine("Enter Superhero's Height in M (Numeric, Rounded to two decimal places)");
+                    Console.WriteLine("Enter Superhero's Height in CM (Numeric, Rounded to two decimal places)");
                     _height = Console.ReadLine();
                     //Validate if not same
                     if (_height.ToUpper() != "SAME")
