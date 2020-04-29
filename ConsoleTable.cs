@@ -11,7 +11,7 @@ namespace ConsoleTables
 
     /// <summary>
     /// Console Table Library by khalidabuhakmeh
-    /// https://github.com/khalidabuhakmeh/ConsoleTables/blob/master/src/ConsoleTables/ConsoleTable.cs
+    /// Source: https://github.com/khalidabuhakmeh/ConsoleTables/blob/master/src/ConsoleTables/ConsoleTable.cs
     /// </summary>
 
     public class ConsoleTable

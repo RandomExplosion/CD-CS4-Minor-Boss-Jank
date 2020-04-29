@@ -5,27 +5,27 @@ using ConsoleTables;
 
 namespace CSharp_MinorBoss_ConsoleApp
 {
-
+    /// <summary>
+    /// Enumeration for race data
+    /// </summary>
     public enum Race { Human, Alien, Animal, Supernatural }
 
+    /// <summary>
+    /// Main Program Class
+    /// </summary>
     class Program
     {
         /// <summary>
         /// Source: https://www.codeproject.com/Articles/415732/Reading-and-Writing-CSV-Files-in-Csharp
         /// </summary>
         
+        //Static reference to the database
         public static HeroTable dbTable;
 
-        static void WriteTest()
-        {
-
-        }
-
-        static void ReadTest()
-        {
-
-        }
-
+        /// <summary>
+        /// Main function (pretty straight forward :/)
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             //Check If File Exists and if not create it
@@ -38,7 +38,7 @@ namespace CSharp_MinorBoss_ConsoleApp
             //Instantiate 
             dbTable = new HeroTable();
             dbTable.LoadFromCSV("Database.csv");
-
+            
             while (true)
             {
                 #region Scope:RootMenu
@@ -79,6 +79,13 @@ namespace CSharp_MinorBoss_ConsoleApp
             }
         }
 
+        /// <summary>
+        /// Print A prompt to the console with a heading and a list of options then return the option
+        /// #Note Clears previous console content
+        /// </summary>
+        /// <param name="promptText"></param>
+        /// <param name="optionsList"></param>
+        /// <returns></returns>
         static int QueryUserAction(string promptText, string[] optionsList)
         {
             bool GotValidInput = false;
@@ -118,6 +125,9 @@ namespace CSharp_MinorBoss_ConsoleApp
 
         }
 
+        /// <summary>
+        /// Implimentation of the batch command "Pause" but it has to be enter
+        /// </summary>
         public static void WaitForEnterPress()
         {
             Console.WriteLine("Press ENTER to continue...");
@@ -134,15 +144,27 @@ namespace CSharp_MinorBoss_ConsoleApp
         }
     }
 
+    /// <summary>
+    /// Class for a single hero and it's data
+    /// </summary>
     public class SuperHero
     {
-        public string heroName = "";
-        public string realName = "";
+        public string heroName = "";    
+        public string realName = "";    
         public double weight = 0d;
         public double height = 0d;
         public Race race = Race.Human;
         public bool inMovie = false;
 
+        /// <summary>
+        /// Constructor that takes the relevant data
+        /// </summary>
+        /// <param name="_heroName"></param>
+        /// <param name="_realName"></param>
+        /// <param name="_weight"></param>
+        /// <param name="_height"></param>
+        /// <param name="_race"></param>
+        /// <param name="_inMovie"></param>
         public SuperHero(string _heroName, string _realName, double _weight, double _height, Race _race, bool _inMovie)
         {
             heroName = _heroName;
@@ -153,6 +175,15 @@ namespace CSharp_MinorBoss_ConsoleApp
             inMovie = _inMovie;
         }
 
+        /// <summary>
+        /// Method to modify data (so far redundant)
+        /// </summary>
+        /// <param name="_heroName"></param>
+        /// <param name="_realName"></param>
+        /// <param name="_weight"></param>
+        /// <param name="_height"></param>
+        /// <param name="_race"></param>
+        /// <param name="_inMovie"></param>
         public void ModifyData(string _heroName, string _realName, double _weight, double _height, Race _race, bool _inMovie)
         {
             heroName = _heroName;
@@ -165,10 +196,18 @@ namespace CSharp_MinorBoss_ConsoleApp
 
 
     }
+
+    /// <summary>
+    /// Class for a full table with display, read and write functionality
+    /// </summary>
     public class HeroTable
     {
         public readonly SortedDictionary<string, SuperHero> heroesByName = new SortedDictionary<string, SuperHero>();
 
+        /// <summary>
+        /// Print the database to the console using a neat table
+        /// I used the ConsoleTable Library by https://github.com/khalidabuhakmeh See file for repo
+        /// </summary>
         public void PrintTable()
         {
             Console.Clear();
@@ -182,7 +221,11 @@ namespace CSharp_MinorBoss_ConsoleApp
             
         }
 
-        //Load the data from the csv database
+        /// <summary>
+        /// Load Data from csv file into memory
+        /// File must be in %UserProfile%\AppData\Roaming\MarvelDB
+        /// </summary>
+        /// <param name="fileName"></param>
         public void LoadFromCSV(string fileName)
         {
 
@@ -214,7 +257,11 @@ namespace CSharp_MinorBoss_ConsoleApp
             
         }
 
-        //Save the data to the csv database
+        /// <summary>
+        /// Save the database to the csv file with the specified file name
+        /// #Note: Always saved under %UserProfile%\AppData\Roaming\MarvelDB\
+        /// </summary>
+        /// <param name="fileName"></param>
         public void SaveToCSV(string fileName)
         {
             // Write sample data to CSV file
@@ -239,6 +286,9 @@ namespace CSharp_MinorBoss_ConsoleApp
             }
         }
 
+        /// <summary>
+        /// Add a super hero to the database and ask user for their info
+        /// </summary>
         public void AddSuperHero()
         {
             Console.Clear();
@@ -322,6 +372,9 @@ namespace CSharp_MinorBoss_ConsoleApp
             }
         }
 
+        /// <summary>
+        /// Modify an existing super hero's data
+        /// </summary>
         public void EditSuperHero()
         {
             Console.Clear();
@@ -440,6 +493,9 @@ namespace CSharp_MinorBoss_ConsoleApp
             }
         }
 
+        /// <summary>
+        /// Ask user for a super hero name in the database and prompt for confirmation before deleting
+        /// </summary>
         public void RemoveHero()
         {
             //Query The name of the hero to remove
